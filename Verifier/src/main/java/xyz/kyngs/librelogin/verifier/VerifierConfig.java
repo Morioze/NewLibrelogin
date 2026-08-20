@@ -16,6 +16,7 @@ public final class VerifierConfig {
 
     public static final String DEFAULT_SERVER = "127.0.0.1:48777";
     public static final String DEFAULT_AUTO_UPDATE_URL = "https://github.com/Morioze/NewLibrelogin/releases/download/a/LibreLoginVerifier.jar";
+    public static final String DEFAULT_KICK_MESSAGE = "&c&l请勿非法加入！";
 
     private static final String TEMPLATE =
             "# LibreLoginVerifier configuration (Java 8 backend).\n" +
@@ -26,6 +27,9 @@ public final class VerifierConfig {
             "# proxy to reject any connection that does NOT carry a valid ticket from your proxy.\n" +
             "# If your proxy runs on a different machine than this server, change this address.\n" +
             "proxy-auth-server = \"127.0.0.1:48777\"\n" +
+            "\n" +
+            "# Message shown to players whose connection is rejected.\n" +
+            "kick-message = \"&c&l请勿非法加入！\"\n" +
             "\n" +
             "# If the proxy is unreachable, accept the connection anyway (true) or reject it (false).\n" +
             "# Keep false for maximum protection.\n" +
@@ -41,14 +45,16 @@ public final class VerifierConfig {
             "auto-update-interval = 43200\n";
 
     private final String server;
+    private final String kickMessage;
     private final boolean failOpen;
     private final boolean debug;
     private final boolean autoUpdate;
     private final String autoUpdateUrl;
     private final long autoUpdateInterval;
 
-    public VerifierConfig(String server, boolean failOpen, boolean debug, boolean autoUpdate, String autoUpdateUrl, long autoUpdateInterval) {
+    public VerifierConfig(String server, String kickMessage, boolean failOpen, boolean debug, boolean autoUpdate, String autoUpdateUrl, long autoUpdateInterval) {
         this.server = server;
+        this.kickMessage = kickMessage;
         this.failOpen = failOpen;
         this.debug = debug;
         this.autoUpdate = autoUpdate;
@@ -58,6 +64,10 @@ public final class VerifierConfig {
 
     public String getServer() {
         return server;
+    }
+
+    public String getKickMessage() {
+        return kickMessage;
     }
 
     public boolean isFailOpen() {
@@ -88,6 +98,7 @@ public final class VerifierConfig {
         }
         try {
             String server = DEFAULT_SERVER;
+            String kickMessage = DEFAULT_KICK_MESSAGE;
             boolean failOpen = false;
             boolean debug = false;
             boolean autoUpdate = true;
@@ -103,6 +114,8 @@ public final class VerifierConfig {
                 String value = cleaned.substring(eq + 1).trim();
                 if (key.equals("proxy-auth-server")) {
                     server = unquote(value);
+                } else if (key.equals("kick-message")) {
+                    kickMessage = unquote(value);
                 } else if (key.equals("proxy-auth-fail-open")) {
                     failOpen = Boolean.parseBoolean(value);
                 } else if (key.equals("debug")) {
@@ -115,14 +128,14 @@ public final class VerifierConfig {
                     autoUpdateInterval = Long.parseLong(value);
                 }
             }
-            return new VerifierConfig(server, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
+            return new VerifierConfig(server, kickMessage, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
         } catch (Exception e) {
             return defaults();
         }
     }
 
     private static VerifierConfig defaults() {
-        return new VerifierConfig(DEFAULT_SERVER, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+        return new VerifierConfig(DEFAULT_SERVER, DEFAULT_KICK_MESSAGE, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
     }
 
     private static void writeTemplate(File dataFolder, File file) {

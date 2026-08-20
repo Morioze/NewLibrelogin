@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, boolean autoUpdate, String autoUpdateUrl, long autoUpdateInterval) {
+public record ProxyAuthConfig(String server, String kickMessage, boolean failOpen, boolean debug, boolean autoUpdate, String autoUpdateUrl, long autoUpdateInterval) {
 
     public static final String DEFAULT_SERVER = "127.0.0.1:48777";
+
+    public static final String DEFAULT_KICK_MESSAGE = "&c&l请勿非法加入！";
 
     public static final String DEFAULT_AUTO_UPDATE_URL = "https://github.com/Morioze/NewLibrelogin/releases/download/a/LibreLogin.jar";
 
@@ -26,6 +28,9 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
             # proxy to reject any connection that does NOT carry a valid ticket from your proxy.
             # If your proxy runs on a different machine than this server, change this address.
             proxy-auth-server = "127.0.0.1:48777"
+
+            # Message shown to players whose connection is rejected.
+            kick-message = "&c&l请勿非法加入！"
 
             # If the proxy is unreachable, accept the connection anyway (true) or reject it (false).
             # Keep false for maximum protection.
@@ -45,10 +50,11 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
         var file = new File(dataFolder, "config.conf");
         if (!file.isFile()) {
             writeTemplate(dataFolder, file);
-            return new ProxyAuthConfig(DEFAULT_SERVER, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+            return new ProxyAuthConfig(DEFAULT_SERVER, DEFAULT_KICK_MESSAGE, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
         }
         try {
             String server = "";
+            String kickMessage = DEFAULT_KICK_MESSAGE;
             boolean failOpen = false;
             boolean debug = false;
             boolean autoUpdate = true;
@@ -63,6 +69,8 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
                 var value = cleaned.substring(eq + 1).trim();
                 if (key.equals("proxy-auth-server")) {
                     server = unquote(value);
+                } else if (key.equals("kick-message")) {
+                    kickMessage = unquote(value);
                 } else if (key.equals("proxy-auth-fail-open")) {
                     failOpen = Boolean.parseBoolean(value);
                 } else if (key.equals("debug")) {
@@ -75,9 +83,9 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
                     autoUpdateInterval = Long.parseLong(value);
                 }
             }
-            return new ProxyAuthConfig(server, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
+            return new ProxyAuthConfig(server, kickMessage, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
         } catch (Exception e) {
-            return new ProxyAuthConfig(DEFAULT_SERVER, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+            return new ProxyAuthConfig(DEFAULT_SERVER, DEFAULT_KICK_MESSAGE, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
         }
     }
 

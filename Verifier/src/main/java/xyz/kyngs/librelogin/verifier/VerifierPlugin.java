@@ -38,7 +38,7 @@ public final class VerifierPlugin extends JavaPlugin {
         }
 
         AuthClient client = new AuthClient(hostPort[0], Integer.parseInt(hostPort[1]));
-        PacketEvents.getAPI().getEventManager().registerListener(new AuthVerifier(client, config.isFailOpen(), getLogger()));
+        PacketEvents.getAPI().getEventManager().registerListener(new AuthVerifier(client, config.isFailOpen(), config.getKickMessage(), this, getLogger()));
 
         getLogger().info("Proxy authentication verification enabled. Only connections carrying a valid ticket from your proxy will be accepted.");
 

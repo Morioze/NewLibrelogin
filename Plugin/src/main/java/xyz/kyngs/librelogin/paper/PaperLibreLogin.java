@@ -202,7 +202,7 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
         }
 
         getLogger().info("Proxy authentication verification enabled. Only connections carrying a valid ticket from your proxy will be accepted.");
-        PacketEvents.getAPI().getEventManager().registerListener(new ProxyAuthVerifier(config, getLogger()));
+        PacketEvents.getAPI().getEventManager().registerListener(new ProxyAuthVerifier(config, getLogger(), bootstrap));
     }
 
     @Override
