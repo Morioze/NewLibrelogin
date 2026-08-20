@@ -11,6 +11,10 @@ plugins {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+    options.compilerArgs.add("-source")
+    options.compilerArgs.add("17")
+    options.compilerArgs.add("-target")
+    options.compilerArgs.add("17")
 }
 
 mcupload {

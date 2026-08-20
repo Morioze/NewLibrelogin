@@ -23,6 +23,7 @@ tasks.test {
 
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
+    options.release.set(17)
 }
 
 java {
