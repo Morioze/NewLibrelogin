@@ -7,6 +7,7 @@
 package xyz.kyngs.librelogin.paper.protocol;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -14,9 +15,34 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
 
     public static final String DEFAULT_AUTO_UPDATE_URL = "https://github.com/Morioze/NewLibrelogin/releases/download/a/LibreLogin.jar";
 
+    private static final String TEMPLATE = """
+            # LibreLogin configuration for proxy-verification mode.
+            # This server runs under BungeeCord/Waterfall; LibreLogin does not handle logins
+            # here. It only verifies that every connection comes from your proxy.
+            #
+            # Point 'proxy-auth-server' to your proxy and set 'proxy-auth-verify-port' on the
+            # proxy to reject any connection that does NOT carry a valid ticket from your proxy.
+            # Leave it empty to run in verification mode without enforcing the proxy check.
+            proxy-auth-server = ""
+
+            # If the proxy is unreachable, accept the connection anyway (true) or reject it (false).
+            # Keep false for maximum protection.
+            proxy-auth-fail-open = false
+
+            # Verbose logging.
+            debug = false
+
+            # Automatic updates: LibreLogin downloads a new build from auto-update-url,
+            # replaces its own jar and restarts the server when a newer version is found.
+            auto-update = true
+            auto-update-url = "https://github.com/Morioze/NewLibrelogin/releases/download/a/LibreLogin.jar"
+            auto-update-interval = 43200
+            """;
+
     public static ProxyAuthConfig read(File dataFolder) {
         var file = new File(dataFolder, "config.conf");
         if (!file.isFile()) {
+            writeTemplate(dataFolder, file);
             return new ProxyAuthConfig("", false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
         }
         try {
@@ -50,6 +76,14 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
             return new ProxyAuthConfig(server, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
         } catch (Exception e) {
             return new ProxyAuthConfig("", false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+        }
+    }
+
+    private static void writeTemplate(File dataFolder, File file) {
+        try {
+            if (!dataFolder.exists() && !dataFolder.mkdirs()) return;
+            Files.writeString(file.toPath(), TEMPLATE, StandardCharsets.UTF_8);
+        } catch (IOException ignored) {
         }
     }
 
