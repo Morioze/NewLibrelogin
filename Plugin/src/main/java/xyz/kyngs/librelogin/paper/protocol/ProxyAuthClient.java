@@ -44,7 +44,7 @@ public class ProxyAuthClient {
             int colon = trimmed.lastIndexOf(':');
             if (colon <= 0) throw new IllegalArgumentException("Invalid proxy-auth-server: " + server);
             host = trimmed.substring(0, colon);
-            portPart = trimmed.substring(colon + 1);
+            portPart = trimmed.substring(colon);
         }
         if (host.isEmpty() || !portPart.startsWith(":")) {
             throw new IllegalArgumentException("Invalid proxy-auth-server: " + server);
