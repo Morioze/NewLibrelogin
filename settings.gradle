@@ -10,3 +10,4 @@ pluginManagement {
 rootProject.name = 'LibreLogin'
 include 'Plugin'
 include 'API'
+include 'Verifier'

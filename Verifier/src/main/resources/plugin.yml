@@ -1,0 +1,5 @@
+name: LibreLoginVerifier
+version: 0.24.0
+main: xyz.kyngs.librelogin.verifier.VerifierPlugin
+author: Morioze
+description: Lightweight Java 8 proxy-verification plugin for old backends.

@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'io.github.goooler.shadow' version '8.1.8'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://repo.codemc.io/repository/maven-public/' }
+    maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+    implementation 'com.github.retrooper:packetevents-spigot:2.7.0'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = 8
+}
+
+shadowJar {
+    archiveFileName = 'LibreLoginVerifier.jar'
+
+    relocate 'com.github.retrooper.packetevents', 'xyz.kyngs.librelogin.verifier.lib.packetevents.api'
+    relocate 'io.github.retrooper.packetevents', 'xyz.kyngs.librelogin.verifier.lib.packetevents.platform'
+    relocate 'it.unimi.dsi.fastutil', 'xyz.kyngs.librelogin.verifier.lib.fastutil'
+}
