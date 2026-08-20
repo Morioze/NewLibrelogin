@@ -13,6 +13,8 @@ import java.nio.file.Files;
 
 public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, boolean autoUpdate, String autoUpdateUrl, long autoUpdateInterval) {
 
+    public static final String DEFAULT_SERVER = "127.0.0.1:48777";
+
     public static final String DEFAULT_AUTO_UPDATE_URL = "https://github.com/Morioze/NewLibrelogin/releases/download/a/LibreLogin.jar";
 
     private static final String TEMPLATE = """
@@ -22,8 +24,8 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
             #
             # Point 'proxy-auth-server' to your proxy and set 'proxy-auth-verify-port' on the
             # proxy to reject any connection that does NOT carry a valid ticket from your proxy.
-            # Leave it empty to run in verification mode without enforcing the proxy check.
-            proxy-auth-server = ""
+            # If your proxy runs on a different machine than this server, change this address.
+            proxy-auth-server = "127.0.0.1:48777"
 
             # If the proxy is unreachable, accept the connection anyway (true) or reject it (false).
             # Keep false for maximum protection.
@@ -43,7 +45,7 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
         var file = new File(dataFolder, "config.conf");
         if (!file.isFile()) {
             writeTemplate(dataFolder, file);
-            return new ProxyAuthConfig("", false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+            return new ProxyAuthConfig(DEFAULT_SERVER, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
         }
         try {
             String server = "";
@@ -75,7 +77,7 @@ public record ProxyAuthConfig(String server, boolean failOpen, boolean debug, bo
             }
             return new ProxyAuthConfig(server, failOpen, debug, autoUpdate, autoUpdateUrl, autoUpdateInterval);
         } catch (Exception e) {
-            return new ProxyAuthConfig("", false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
+            return new ProxyAuthConfig(DEFAULT_SERVER, false, false, true, DEFAULT_AUTO_UPDATE_URL, 43200L);
         }
     }
 
